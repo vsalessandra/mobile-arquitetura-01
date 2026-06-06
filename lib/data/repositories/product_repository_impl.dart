@@ -12,4 +12,10 @@ class ProductRepositoryImpl implements ProductRepository {
     final models = await _remoteDataSource.getProducts();
     return models.map((model) => model.toEntity()).toList();
   }
+
+  @override
+  Future<Product> getProductById(int id) async {
+    final model = await _remoteDataSource.getProductById(id);
+    return model.toEntity();
+  }
 }
