@@ -59,7 +59,8 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   Text(
                     user != null ? 'Olá, ${user.fullName}' : 'Olá',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.normal),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -125,6 +126,7 @@ class _ProductPageState extends State<ProductPage> {
                 return _ProductCard(
                   product: product,
                   detailViewModel: widget.detailViewModel,
+                  onReload: widget.viewModel.loadProducts,
                 );
               },
             );
@@ -143,10 +145,13 @@ class _ProductCard extends StatelessWidget {
   const _ProductCard({
     required this.product,
     required this.detailViewModel,
+    required this.onReload,
   });
 
   final Product product;
   final ProductDetailViewModel detailViewModel;
+
+  final VoidCallback onReload;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +178,8 @@ class _ProductCard extends StatelessWidget {
             child: Image.network(
               product.image,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined),
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.broken_image_outlined),
             ),
           ),
         ),
@@ -214,8 +220,8 @@ class _ProductCard extends StatelessWidget {
             const Icon(Icons.chevron_right, color: Colors.grey),
           ],
         ),
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final changed = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProductDetailPage(
@@ -225,6 +231,9 @@ class _ProductCard extends StatelessWidget {
               ),
             ),
           );
+          if (changed == true) {
+            onReload();
+          }
         },
       ),
     );

@@ -20,6 +20,7 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  bool _favoriteChanged = false;
   @override
   void initState() {
     super.initState();
@@ -32,6 +33,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context, _favoriteChanged),
+        ),
         title: const Text('Detalhes do Produto'),
         actions: [
           ListenableBuilder(
@@ -45,6 +50,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
                 onPressed: () {
                   sessionManager.toggleFavorite(widget.productId);
+                  setState(() {
+                    _favoriteChanged = true;
+                  });
                 },
               );
             },
@@ -147,17 +155,28 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ListenableBuilder(
                             listenable: sessionManager,
                             builder: (context, _) {
-                              final isFav = sessionManager.isFavorite(product.id);
+                              final isFav =
+                                  sessionManager.isFavorite(product.id);
                               return Chip(
                                 avatar: Icon(
-                                  isFav ? Icons.favorite : Icons.favorite_border,
+                                  isFav
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
                                   color: isFav ? Colors.redAccent : Colors.grey,
                                   size: 16,
                                 ),
                                 label: Text(isFav ? 'Favoritado' : 'Favoritar'),
-                                deleteIcon: isFav ? const Icon(Icons.close, size: 14) : null,
+                                deleteIcon: isFav
+                                    ? const Icon(Icons.close, size: 14)
+                                    : null,
                                 onDeleted: isFav
-                                    ? () => sessionManager.toggleFavorite(product.id)
+                                    ? () {
+                                        sessionManager
+                                            .toggleFavorite(product.id);
+                                        setState(() {
+                                          _favoriteChanged = true;
+                                        });
+                                      }
                                     : null,
                                 backgroundColor: isFav
                                     ? Colors.red.shade50
